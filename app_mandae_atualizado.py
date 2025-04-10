@@ -171,7 +171,8 @@ if planilha_file and zip_file:
         # Criar dicionário de CPF -> linha
         planilha_cpfs = {}
         for row in ws.iter_rows(min_row=3, min_col=idx_cpf, max_col=idx_cpf):
-            cpf_val = str(row[0].value).zfill(11)
+            cpf_val = re.sub(r'\D', '', str(row[0].value))
+        cpf_val = cpf_val.zfill(14 if len(cpf_val) > 11 else 11)
             planilha_cpfs[cpf_val] = row[0].row
 
         # Abrir ZIP de XMLs
@@ -185,12 +186,16 @@ if planilha_file and zip_file:
                             root = tree.getroot()
                             ns = { 'ns': root.tag.split('}')[0].strip('{') }
 
-                            cpf = root.findtext('.//ns:CPF', namespaces=ns)
-                            chave = root.findtext('.//ns:chNFe', namespaces=ns)
+                            doc = root.findtext('.//ns:CPF', namespaces=ns)
+if not doc:
+    doc = root.findtext('.//ns:CNPJ', namespaces=ns)
 
-                            if cpf and chave:
-                                cpf = cpf.zfill(11)
-                                cpf_para_chave[cpf] = chave
+chave = root.findtext('.//ns:chNFe', namespaces=ns)
+
+if doc and chave:
+    doc = re.sub(r'\D', '', doc)
+    doc = doc.zfill(14 if len(doc) > 11 else 11)
+    cpf_para_chave[doc] = chave
                         except:
                             continue
 
