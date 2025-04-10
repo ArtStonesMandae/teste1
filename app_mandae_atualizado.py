@@ -172,7 +172,7 @@ if planilha_file and zip_file:
         planilha_cpfs = {}
         for row in ws.iter_rows(min_row=3, min_col=idx_cpf, max_col=idx_cpf):
             cpf_val = re.sub(r'\D', '', str(row[0].value))
-        cpf_val = cpf_val.zfill(14 if len(cpf_val) > 11 else 11)
+            cpf_val = cpf_val.zfill(14 if len(cpf_val) > 11 else 11)
             planilha_cpfs[cpf_val] = row[0].row
 
         # Abrir ZIP de XMLs
